@@ -52,9 +52,22 @@ class TestCart:
 
     def test_remove_product(self, product):
         cart = Cart()
+        # удаляем часть товара
         cart.add_product(product, 5)
+        cart.remove_product(product, 2)
+        assert cart.products[product] == 3
+        # удаляем все товары
         cart.remove_product(product)
         assert product not in cart.products
+        # удаляем столько же сколько в корзине
+        cart.add_product(product, 5)
+        cart.remove_product(product, 5)
+        assert product not in cart.products
+        # удаляем больше чем в корзине
+        cart.add_product(product, 5)
+        cart.remove_product(product, 10)
+        assert product not in cart.products
+
 
     def test_clear_cart(self, product):
         cart = Cart()
@@ -73,3 +86,12 @@ class TestCart:
             original_quantity = product.quantity
             cart.buy(5)
             assert product.quantity == original_quantity - 5
+
+    def test_buy_with_error(self, product):
+        cart = Cart()
+        cart.add_product(product, 500000)
+        with pytest.raises(ValueError):
+            cart.buy(500000)
+
+        with pytest.raises(ValueError):
+            cart.add_product(product, -5)
